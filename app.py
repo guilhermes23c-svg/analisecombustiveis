@@ -75,21 +75,36 @@ def calcular_densidade_20_exata(d_obs, temp, prod):
     dens_20 = d_obs + (alfa * delta_t)
     return round(dens_20, 4)
 
-# --- 2. TABELA DE BUSCA DE INPM EXPANDIDA E EXATA (NBR 5992) ---
+# --- 2. TABELA ESPELHADA DIRETAMENTE DO LIVRO OFICIAL ---
 def buscar_inpm_na_tabela(dens_20):
-    # Tabela completa cobrindo toda a faixa do livro de conversão para evitar divergências
+    # Valores extraídos milimetricamente da tabela oficial da norma NBR 5992 (conforme foto do livro)
     tabela_inpm = {
-        0.8123: 92.0, 0.8120: 92.1, 0.8116: 92.2, 0.8113: 92.3, 0.8110: 92.4,
-        0.8107: 92.5, 0.8104: 92.6, 0.8101: 92.7, 0.8098: 92.8, 0.8095: 92.9,
-        0.8092: 93.0, 0.8089: 93.1, 0.8086: 93.2, 0.8083: 93.3, 0.8080: 93.4,
-        0.8077: 93.5, 0.8074: 93.6, 0.8071: 93.7, 0.8068: 93.8, 0.8065: 93.9,
-        0.8062: 94.0, 0.8059: 94.1, 0.8056: 94.2, 0.8053: 94.3, 0.8050: 94.4,
-        0.8047: 94.5, 0.8044: 94.6, 0.8041: 94.7, 0.8038: 94.8, 0.8035: 94.9,
-        0.8032: 95.0, 0.8029: 95.1, 0.8026: 95.2, 0.8023: 95.3, 0.8020: 95.4
+        0.8135: 91.6,
+        0.8130: 91.8,
+        0.8125: 92.0,
+        0.8120: 92.2,
+        0.8115: 92.4,
+        0.8110: 92.6,
+        0.8105: 92.7,
+        0.8100: 92.9,
+        0.8095: 93.1,
+        0.8090: 93.3,
+        0.8085: 93.5,
+        0.8080: 93.6,
+        0.8075: 93.8,
+        0.8070: 94.0,
+        0.8065: 94.2,
+        0.8060: 94.4,
+        0.8055: 94.5
     }
-    if dens_20 in tabela_inpm:
-        return tabela_inpm[dens_20]
+    
+    # Arredonda a densidade convertida para o formato de 4 casas decimais do livro (passos de 0.0005)
+    dens_arredondada = round(round(dens_20 / 0.0005) * 0.0005, 4)
+    
+    if dens_arredondada in tabela_inpm:
+        return tabela_inpm[dens_arredondada]
     else:
+        # Se cair milimetricamente entre duas linhas, pega a mais próxima da tabela oficial
         dens_proxima = min(tabela_inpm.keys(), key=lambda k: abs(k - dens_20))
         return tabela_inpm[dens_proxima]
 
@@ -164,7 +179,7 @@ with aba_cadastro:
         with c17:
             st.info(f"**Densidade Convertida a 20°C:**\n\n {dens_20} g/mL")
         with c18:
-            st.success(f"**Teor Alcoólico (Tabela NBR 5992):**\n\n {teor_alc} °INPM")
+            st.success(f"**Teor Alcoólico (Tabela Oficial do Livro):**\n\n {teor_alc} °INPM")
             
     elif "Gas" in produto:
         with c17:
