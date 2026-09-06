@@ -142,32 +142,31 @@ with aba_cadastro:
     teor_texto = f"{teor_etan} %" if "Gas" in produto else f"{teor_alc} °INPM" if "Etanol" in produto else "---"
     data_formatada = data_col.strftime('%d/%m/%Y')
 
-    # Montagem limpa do HTML para evitar quebra de strings no Python
-    html_part1 = f"""
-    <div style="border: 2px solid #000; padding: 15px; font-family: 'Courier New', Courier, monospace; background-color: #fff; color: #000; max-width: 950px; margin: auto; font-size: 13px;">
-        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px;">
-            <h3 style="margin: 0; text-transform: uppercase; font-weight: bold;">Formulário de Registro das Análise de Qualidade (RAQ)</h3>
-        </div>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
-            <tr><td style="padding: 4px; font-weight: bold; width: 30%;">RAZÃO SOCIAL DO POSTO:</td><td style="padding: 4px;" colspan="3">{POSTO_RAZAO}</td></tr>
-            <tr><td style="padding: 4px; font-weight: bold;">CNPJ DO POSTO:</td><td style="padding: 4px;">{POSTO_CNPJ}</td><td style="padding: 4px; font-weight: bold; width: 15%;">ENDEREÇO:</td><td style="padding: 4px;">{POSTO_ENDERECO}</td></tr>
-        </table>
-        <div style="background-color: #e0e0e0; font-weight: bold; padding: 3px; border: 1px solid #000; text-align: center;">DADOS DE RECEBIMENTO</div>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border: 1px solid #000;">
-            <tr style="border-bottom: 1px solid #000; font-weight: bold; background-color: #f5f5f5;"><td style="padding: 5px; border-right: 1px solid #000; width: 40%;">Campo de Registro</td><td style="padding: 5px; text-align: center; color: blue; font-weight: bold;">{produto}</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Volume recebido (litros):</td><td style="padding: 4px; text-align: center;">{volume} L</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Data / Hora da coleta:</td><td style="padding: 4px; text-align: center;">{data_formatada} às {hora_col}</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Distribuidor / CNPJ:</td><td style="padding: 4px; text-align: center;">{dist} | CNPJ: {cnpj_dist}</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Transportador / CNPJ:</td><td style="padding: 4px; text-align: center;">{transp} | CNPJ: {cnpj_transp}</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Nota Fiscal do Produto:</td><td style="padding: 4px; text-align: center; font-weight: bold;">{nf_prod}</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Placa do Caminhão / Motorista:</td><td style="padding: 4px; text-align: center;">{placa_cam} - {mot} (CPF: {cpf_mot})</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Analista Minuano / Origem:</td><td style="padding: 4px; text-align: center;">{resp_quimico}</td></tr>
-        </table>
-        <div style="background-color: #e0e0e0; font-weight: bold; padding: 3px; border: 1px solid #000; text-align: center;">RESULTADOS DAS ANÁLISES</div>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 1px solid #000;">
-            <tr style="border-bottom: 1px solid #000; font-weight: bold; background-color: #f5f5f5; text-align: center;"><td style="padding: 5px; border-right: 1px solid #000; text-align: left; width: 40%;">Parâmetro de Ensaio</td><td style="padding: 5px; font-weight: bold;">Valores Obtidos no Teste</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Aspecto Visual:</td><td style="padding: 4px; text-align: center;">{aspecto}</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Cor:</td><td style="padding: 4px; text-align: center;">{cor}</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Compartimento analisado:</td><td style="padding: 4px; text-align: center;">{comp}</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Temperatura Observada:</td><td style="padding: 4px; text-align: center;">{temp_obs} °C</td></tr>
-            <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Massa Específica Observada:</td><td style="padding: 4px; text-align: center;">{dens_obs} g/mL</td></tr>
+    # Código HTML estruturado em formato de lista simples para passar direto pelo validador do Python
+    html_content = [
+        '<div style="border: 2px solid #000; padding: 15px; font-family: \'Courier New\', Courier, monospace; background-color: #fff; color: #000; max-width: 950px; margin: auto; font-size: 13px;">',
+        '    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px;">',
+        '        <h3 style="margin: 0; text-transform: uppercase; font-weight: bold;">Formulário de Registro das Análise de Qualidade (RAQ)</h3>',
+        '    </div>',
+        '    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">',
+        f'        <tr><td style="padding: 4px; font-weight: bold; width: 30%;">RAZÃO SOCIAL DO POSTO:</td><td style="padding: 4px;" colspan="3">{POSTO_RAZAO}</td></tr>',
+        f'        <tr><td style="padding: 4px; font-weight: bold;">CNPJ DO POSTO:</td><td style="padding: 4px;">{POSTO_CNPJ}</td><td style="padding: 4px; font-weight: bold; width: 15%;">ENDEREÇO:</td><td style="padding: 4px;">{POSTO_ENDERECO}</td></tr>',
+        '    </table>',
+        '    <div style="background-color: #e0e0e0; font-weight: bold; padding: 3px; border: 1px solid #000; text-align: center;">DADOS DE RECEBIMENTO</div>',
+        '    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border: 1px solid #000;">',
+        f'        <tr style="border-bottom: 1px solid #000; font-weight: bold; background-color: #f5f5f5;"><td style="padding: 5px; border-right: 1px solid #000; width: 40%;">Campo de Registro</td><td style="padding: 5px; text-align: center; color: blue; font-weight: bold;">{produto}</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Volume recebido (litros):</td><td style="padding: 4px; text-align: center;">{volume} L</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Data / Hora da coleta:</td><td style="padding: 4px; text-align: center;">{data_formatada} às {hora_col}</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Distribuidor / CNPJ:</td><td style="padding: 4px; text-align: center;">{dist} | CNPJ: {cnpj_dist}</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Transportador / CNPJ:</td><td style="padding: 4px; text-align: center;">{transp} | CNPJ: {cnpj_transp}</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Nota Fiscal do Produto:</td><td style="padding: 4px; text-align: center; font-weight: bold;">{nf_prod}</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Placa do Caminhão / Motorista:</td><td style="padding: 4px; text-align: center;">{placa_cam} - {mot} (CPF: {cpf_mot})</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Analista Minuano / Origem:</td><td style="padding: 4px; text-align: center;">{resp_quimico}</td></tr>',
+        '    </table>',
+        '    <div style="background-color: #e0e0e0; font-weight: bold; padding: 3px; border: 1px solid #000; text-align: center;">RESULTADOS DAS ANÁLISES</div>',
+        '    <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 1px solid #000;">',
+        '        <tr style="border-bottom: 1px solid #000; font-weight: bold; background-color: #f5f5f5; text-align: center;"><td style="padding: 5px; border-right: 1px solid #000; text-align: left; width: 40%;">Parâmetro de Ensaio</td><td style="padding: 5px; font-weight: bold;">Valores Obtidos no Teste</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Aspecto Visual:</td><td style="padding: 4px; text-align: center;">{aspecto}</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Cor:</td><td style="padding: 4px; text-align: center;">{cor}</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Compartimento analisado:</td><td style="padding: 4px; text-align: center;">{comp}</td></tr>',
+        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Temperatura Observada:</td><td style="padding: 4px; text-align: center;">{temp_obs} °C</td></tr>',
