@@ -109,7 +109,7 @@ with aba_cadastro:
         mot = st.selectbox("Nome do Motorista:", list(MOTORISTAS.keys()))
         cpf_mot = MOTORISTAS[mot]
     with c10:
-        st.markdown(f"**CPF do Motorista:**  \n`{cpf_mot}`")
+        st.markdown(f"**CPF do Motorista:**  \\n`{cpf_mot}`")
     with c11:
         resp_quimico = st.selectbox("Analista / Químico de Origem:", QUIMICOS)
 
@@ -142,31 +142,54 @@ with aba_cadastro:
     teor_texto = f"{teor_etan} %" if "Gas" in produto else f"{teor_alc} °INPM" if "Etanol" in produto else "---"
     data_formatada = data_col.strftime('%d/%m/%Y')
 
-    # Código HTML estruturado em formato de lista simples para passar direto pelo validador do Python
-    html_content = [
-        '<div style="border: 2px solid #000; padding: 15px; font-family: \'Courier New\', Courier, monospace; background-color: #fff; color: #000; max-width: 950px; margin: auto; font-size: 13px;">',
-        '    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px;">',
-        '        <h3 style="margin: 0; text-transform: uppercase; font-weight: bold;">Formulário de Registro das Análise de Qualidade (RAQ)</h3>',
-        '    </div>',
-        '    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">',
-        f'        <tr><td style="padding: 4px; font-weight: bold; width: 30%;">RAZÃO SOCIAL DO POSTO:</td><td style="padding: 4px;" colspan="3">{POSTO_RAZAO}</td></tr>',
-        f'        <tr><td style="padding: 4px; font-weight: bold;">CNPJ DO POSTO:</td><td style="padding: 4px;">{POSTO_CNPJ}</td><td style="padding: 4px; font-weight: bold; width: 15%;">ENDEREÇO:</td><td style="padding: 4px;">{POSTO_ENDERECO}</td></tr>',
-        '    </table>',
-        '    <div style="background-color: #e0e0e0; font-weight: bold; padding: 3px; border: 1px solid #000; text-align: center;">DADOS DE RECEBIMENTO</div>',
-        '    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border: 1px solid #000;">',
-        f'        <tr style="border-bottom: 1px solid #000; font-weight: bold; background-color: #f5f5f5;"><td style="padding: 5px; border-right: 1px solid #000; width: 40%;">Campo de Registro</td><td style="padding: 5px; text-align: center; color: blue; font-weight: bold;">{produto}</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Volume recebido (litros):</td><td style="padding: 4px; text-align: center;">{volume} L</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Data / Hora da coleta:</td><td style="padding: 4px; text-align: center;">{data_formatada} às {hora_col}</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Distribuidor / CNPJ:</td><td style="padding: 4px; text-align: center;">{dist} | CNPJ: {cnpj_dist}</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Transportador / CNPJ:</td><td style="padding: 4px; text-align: center;">{transp} | CNPJ: {cnpj_transp}</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Nota Fiscal do Produto:</td><td style="padding: 4px; text-align: center; font-weight: bold;">{nf_prod}</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Placa do Caminhão / Motorista:</td><td style="padding: 4px; text-align: center;">{placa_cam} - {mot} (CPF: {cpf_mot})</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Analista Minuano / Origem:</td><td style="padding: 4px; text-align: center;">{resp_quimico}</td></tr>',
-        '    </table>',
-        '    <div style="background-color: #e0e0e0; font-weight: bold; padding: 3px; border: 1px solid #000; text-align: center;">RESULTADOS DAS ANÁLISES</div>',
-        '    <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 1px solid #000;">',
-        '        <tr style="border-bottom: 1px solid #000; font-weight: bold; background-color: #f5f5f5; text-align: center;"><td style="padding: 5px; border-right: 1px solid #000; text-align: left; width: 40%;">Parâmetro de Ensaio</td><td style="padding: 5px; font-weight: bold;">Valores Obtidos no Teste</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Aspecto Visual:</td><td style="padding: 4px; text-align: center;">{aspecto}</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Cor:</td><td style="padding: 4px; text-align: center;">{cor}</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Compartimento analisado:</td><td style="padding: 4px; text-align: center;">{comp}</td></tr>',
-        f'        <tr><td style="padding: 4px; border-right: 1px solid #000; font-weight: bold;">Temperatura Observada:</td><td style="padding: 4px; text-align: center;">{temp_obs} °C</td></tr>',
+    st.markdown(f"""
+    ---
+    ### FORMULÁRIO DE REGISTRO DAS ANÁLISE DE QUALIDADE (RAQ)
+    **RAZÃO SOCIAL DO POSTO:** {POSTO_RAZAO}  
+    **CNPJ DO POSTO:** {POSTO_CNPJ}  
+    **ENDEREÇO:** {POSTO_ENDERECO}  
+    
+    ---
+    #### DADOS DE RECEBIMENTO
+    * **Produto Selecionado:** {produto}
+    * **Volume recebido:** {volume} L
+    * **Data / Hora da coleta:** {data_formatada} às {hora_col}
+    * **Distribuidor:** {dist} | CNPJ: {cnpj_dist}
+    * **Transportador:** {transp} | CNPJ: {cnpj_transp}
+    * **Nota Fiscal do Produto:** {nf_prod}
+    * **Placa do Caminhão / Motorista:** {placa_cam} - {mot} (CPF: {cpf_mot})
+    * **Analista de Origem:** {resp_quimico}
+    
+    ---
+    #### RESULTADOS DAS ANÁLISES
+    * **Aspecto Visual:** {aspecto}
+    * **Cor:** {cor}
+    * **Compartimento analisado:** {comp}
+    * **Temperatura Observada:** {temp_obs} °C
+    * **Massa Específica Observada:** {dens_obs} g/mL
+    * **MASSA ESPECÍFICA CONVERTIDA À 20°C:** **{dens_20} g/mL**
+    * **Teor de Etanol / Alcoólico:** {teor_texto}
+    
+    ---
+    \\n\\n\\n
+    <center>____________________________________________________</center>
+    <center><strong>ASSINATURA DO RESPONSÁVEL DO POSTO</strong></center>
+    """, unsafe_allow_html=True)
+
+    if st.button("💾 Gravar e Arquivar Análise no Histórico", type="primary"):
+        agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+        cursor.execute("""
+            INSERT INTO raq_registros (data_registro, produto, volume, data_coleta, hora_coleta, distribuidor, cnpj_distribuidor, transportador, cnpj_transportador, nf, placa, motorista, cpf_motorista, quimico, aspecto, cor, compartimento, temp_obs, dens_obs, dens_20, teor_etanol, teor_alcoolico)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (agora, produto, volume, data_col.strftime('%Y-%m-%d'), hora_col, dist, cnpj_dist, transp, cnpj_transp, nf_prod, placa_cam, mot, cpf_mot, resp_quimico, aspecto, cor, comp, temp_obs, dens_obs, dens_20, teor_etan, teor_alc))
+        conn.commit()
+        st.toast("RAQ arquivada com sucesso!", icon="✅")
+
+with aba_historico:
+    st.markdown("### 📜 Consultar Registros Salvos Eletronicamente")
+    df_busca = pd.read_sql_query("SELECT id as 'ID', data_registro as 'Data do Lançamento', produto as 'Combustível', volume as 'Volume (L)', nf as 'Nota Fiscal', motorista as 'Motorista', dens_20 as 'Densidade a 20°C' FROM raq_registros ORDER BY id DESC", conn)
+    
+    if not df_busca.empty:
+        st.dataframe(df_busca, use_container_width=True, hide_index=True)
+    else:
+        st.info("Nenhum lançamento foi armazenado no banco local até o momento.")
