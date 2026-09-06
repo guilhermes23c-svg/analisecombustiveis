@@ -77,7 +77,6 @@ def calcular_densidade_20_exata(d_obs, temp, prod):
 
 # --- 2. TABELA ESPELHADA DIRETAMENTE DO LIVRO OFICIAL ---
 def buscar_inpm_na_tabela(dens_20):
-    # Valores extraídos milimetricamente da tabela oficial da norma NBR 5992 (conforme foto do livro)
     tabela_inpm = {
         0.8135: 91.6,
         0.8130: 91.8,
@@ -98,13 +97,11 @@ def buscar_inpm_na_tabela(dens_20):
         0.8055: 94.5
     }
     
-    # Arredonda a densidade convertida para o formato de 4 casas decimais do livro (passos de 0.0005)
     dens_arredondada = round(round(dens_20 / 0.0005) * 0.0005, 4)
     
     if dens_arredondada in tabela_inpm:
         return tabela_inpm[dens_arredondada]
     else:
-        # Se cair milimetricamente entre duas linhas, pega a mais próxima da tabela oficial
         dens_proxima = min(tabela_inpm.keys(), key=lambda k: abs(k - dens_20))
         return tabela_inpm[dens_proxima]
 
@@ -179,7 +176,11 @@ with aba_cadastro:
         with c17:
             st.info(f"**Densidade Convertida a 20°C:**\n\n {dens_20} g/mL")
         with c18:
-            st.success(f"**Teor Alcoólico (Tabela Oficial do Livro):**\n\n {teor_alc} °INPM")
+            # Validação do Etanol (92.5 a 95.4 °INPM)
+            if 92.5 <= teor_alc <= 95.4:
+                st.markdown(f"**Teor Alcoólico (Tabela Oficial):** <br><span style='color:green; font-weight:bold;'>{teor_alc} °INPM (Dentro da Especificação)</span>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"**Teor Alcoólico (Tabela Oficial):** <br><span style='color:red; font-weight:bold;'>{teor_alc} °INPM (FORA DA ESPECIFICAÇÃO!)</span>", unsafe_allow_html=True)
             
     elif "Gas" in produto:
         with c17:
@@ -205,7 +206,10 @@ with aba_cadastro:
         else:
             teor_texto = f"<span style='color:red; font-weight:bold;'>{teor_etan} % (FORA DA ESPECIFICAÇÃO)</span>"
     elif "Etanol" in produto:
-        teor_texto = f"{teor_alc} °INPM"
+        if 92.5 <= teor_alc <= 95.4:
+            teor_texto = f"<span style='color:green;'>{teor_alc} °INPM (Conforme)</span>"
+        else:
+            teor_texto = f"<span style='color:red; font-weight:bold;'>{teor_alc} °INPM (FORA DA ESPECIFICAÇÃO)</span>"
     else:
         teor_texto = "---"
 
