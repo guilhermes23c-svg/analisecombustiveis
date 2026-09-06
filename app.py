@@ -62,20 +62,23 @@ MOTORISTAS = {
 PLACAS = ["LRF-9973", "LRH-6994", "HKE-0D06", "LPV-4C13", "ASW-9C86"]
 QUIMICOS = ["Miguel Antonio Alves  C.R.Q: 03212571", "Não Informado"]
 
-# --- 1. MOTOR DE CONVERSÃO EXATA (PADRÃO ANP) ---
+# --- 1. NOVO MOTOR DE CONVERSÃO EXATA (PADRÃO ANP) ---
 def calcular_densidade_20_exata(d_obs, temp, prod):
+    # Fatores de Correção Térmica oficiais (ASTM D1250 e NBR 5992)
     if "Etanol" in prod:
-        alfa = 0.00086
+        alfa = 0.00086   # Coeficiente térmico do Etanol Hidratado
     elif "Gas" in prod:
-        alfa = 0.00122
+        alfa = 0.00122   # Coeficiente térmico da Gasolina
     else:
-        alfa = 0.00085
+        alfa = 0.00085   # Coeficiente térmico do Diesel
     
+    # O cálculo na indústria baseia-se na diferença para a base de 20°C
     delta_t = temp - 20.0
     dens_20 = d_obs + (alfa * delta_t)
+    
     return round(dens_20, 4)
 
-# --- 2. TABELA DE BUSCA DE INPM EXATA (NBR 5992) ---
+# --- 2. NOVA TABELA DE BUSCA DE INPM EXATA (NBR 5992) ---
 def buscar_inpm_na_tabela(dens_20):
     tabela_inpm = {
         0.8113: 92.5, 0.8110: 92.6, 0.8107: 92.7, 0.8104: 92.8, 0.8101: 92.9,
@@ -85,6 +88,7 @@ def buscar_inpm_na_tabela(dens_20):
         0.8050: 94.5, 0.8047: 94.6, 0.8044: 94.7, 0.8041: 94.8, 0.8038: 94.9,
         0.8035: 95.0, 0.8031: 95.1, 0.8028: 95.2, 0.8025: 95.3, 0.8022: 95.4
     }
+    # Retorna exatamente o valor se existir, ou aproxima se houver variação minúscula
     if dens_20 in tabela_inpm:
         return tabela_inpm[dens_20]
     else:
@@ -92,11 +96,11 @@ def buscar_inpm_na_tabela(dens_20):
         return tabela_inpm[dens_proxima]
 
 # --- NAVEGAÇÃO POR ABAS NO APP ---
-aba_cadastro, aba_historico = st.tabs(["📄 Lançar Nova Análise", "📜 Histórico de Lançamentos"])
+aba_cadastro, aba_historico = st.tabs(["📄 Gerar Ficha RAQ Atual", "📜 Histórico de Lançamentos"])
 
 with aba_cadastro:
-    st.title("⛽ Lançamento de Análises de Combustível")
-    st.subheader(f"{POSTO_RAZAO}")
+    st.title("⛽ Emissor de RAQ Automatizado")
+    st.subheader(f"{POSTO_RAZAO} | CNPJ: {POSTO_CNPJ}")
     
     st.markdown("### 📋 1. Dados de Recebimento da Carga")
     c1, c2, c3, c4 = st.columns(4)
@@ -144,11 +148,13 @@ with aba_cadastro:
     st.markdown("#### 🌡️ Termodensimetria (Informe o que está na proveta)")
     c15, c16 = st.columns(2)
     with c15:
+        # Valores padrão variam de acordo com o combustível selecionado
         temp_obs = st.number_input("Temperatura Observada (°C)", min_value=10.0, max_value=40.0, value=25.0, step=0.5, format="%.1f")
     with c16:
         val_dens = 0.8048 if "Etanol" in produto else 0.7400 if "Gas" in produto else 0.8400
         dens_obs = st.number_input("Massa Específica Observada (g/mL)", min_value=0.7000, max_value=0.9000, value=val_dens, step=0.0005, format="%.4f")
 
+    # Calcula com a NOVA fórmula exata da indústria
     dens_20 = calcular_densidade_20_exata(dens_obs, temp_obs, produto)
 
     st.markdown("#### ⚙️ Teores Calculados (Automático)")
@@ -176,6 +182,45 @@ with aba_cadastro:
             st.info(f"**Densidade Convertida a 20°C:**\n\n {dens_20} g/mL")
 
     st.divider()
+    st.markdown("### 📄 Modelo da Ficha RAQ Pronta para Impressão")
+    st.info("Pressione `Ctrl + P` no computador para enviar direto para a impressora do posto.")
+
+    teor_texto = f"{teor_etan} %" if "Gas" in produto else f"{teor_alc} °INPM" if "Etanol" in produto else "---"
+    data_formatada = data_col.strftime('%d/%m/%Y')
+
+    st.markdown(f"""
+    ---
+    ### FORMULÁRIO DE REGISTRO DAS ANÁLISE DE QUALIDADE (RAQ)
+    **RAZÃO SOCIAL DO POSTO:** {POSTO_RAZAO}<br>
+    **CNPJ DO POSTO:** {POSTO_CNPJ}<br>
+    **ENDEREÇO:** {POSTO_ENDERECO}<br>
+    
+    ---
+    #### DADOS DE RECEBIMENTO
+    * **Produto Selecionado:** {produto}
+    * **Volume recebido:** {volume} L
+    * **Data / Hora da coleta:** {data_formatada} às {hora_col}
+    * **Distribuidor:** {dist} | CNPJ: {cnpj_dist}
+    * **Transportador:** {transp} | CNPJ: {cnpj_transp}
+    * **Nota Fiscal do Produto:** {nf_prod}
+    * **Placa do Caminhão / Motorista:** {placa_cam} - {mot} (CPF: {cpf_mot})
+    * **Analista de Origem:** {resp_quimico}
+    
+    ---
+    #### RESULTADOS DAS ANÁLISES
+    * **Aspecto Visual:** {aspecto}
+    * **Cor:** {cor}
+    * **Compartimento analisado:** {comp}
+    * **Temperatura Observada:** {temp_obs} °C
+    * **Massa Específica Observada:** {dens_obs} g/mL
+    * **MASSA ESPECÍFICA CONVERTIDA À 20°C:** **{dens_20} g/mL**
+    * **Teor de Etanol / Alcoólico:** {teor_texto}
+    
+    ---
+    <br><br><br>
+    <center>____________________________________________________</center>
+    <center><strong>ASSINATURA DO RESPONSÁVEL DO POSTO</strong></center>
+    """, unsafe_allow_html=True)
 
     if st.button("💾 Gravar e Arquivar Análise no Histórico", type="primary"):
         if not nf_prod.strip():
