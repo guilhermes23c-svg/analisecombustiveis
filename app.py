@@ -177,6 +177,47 @@ with aba_cadastro:
 
     st.divider()
 
+    # --- VISUALIZAÇÃO DO MODELO RAQ NA TELA ---
+    st.markdown("### 📄 Prévia da Ficha RAQ")
+    teor_texto = f"{teor_etan} %" if "Gas" in produto else f"{teor_alc} °INPM" if "Etanol" in produto else "---"
+    data_formatada = data_col.strftime('%d/%m/%Y')
+
+    st.markdown(f"""
+    ---
+    ### FORMULÁRIO DE REGISTRO DAS ANÁLISE DE QUALIDADE (RAQ)
+    **RAZÃO SOCIAL DO POSTO:** {POSTO_RAZAO}<br>
+    **CNPJ DO POSTO:** {POSTO_CNPJ}<br>
+    **ENDEREÇO:** {POSTO_ENDERECO}<br>
+    
+    ---
+    #### DADOS DE RECEBIMENTO
+    * **Produto Selecionado:** {produto}
+    * **Volume recebido:** {volume} L
+    * **Data / Hora da coleta:** {data_formatada} às {hora_col}
+    * **Distribuidor:** {dist} | CNPJ: {cnpj_dist}
+    * **Transportador:** {transp} | CNPJ: {cnpj_transp}
+    * **Nota Fiscal do Produto:** {nf_prod}
+    * **Placa do Caminhão / Motorista:** {placa_cam} - {mot} (CPF: {cpf_mot})
+    * **Analista de Origem:** {resp_quimico}
+    
+    ---
+    #### RESULTADOS DAS ANÁLISES
+    * **Aspecto Visual:** {aspecto}
+    * **Cor:** {cor}
+    * **Compartimento analisado:** {comp}
+    * **Temperatura Observada:** {temp_obs} °C
+    * **Massa Específica Observada:** {dens_obs} g/mL
+    * **MASSA ESPECÍFICA CONVERTIDA À 20°C:** **{dens_20} g/mL**
+    * **Teor de Etanol / Alcoólico:** {teor_texto}
+    
+    ---
+    <br><br>
+    <center>____________________________________________________</center>
+    <center><strong>ASSINATURA DO RESPONSÁVEL DO POSTO</strong></center>
+    """, unsafe_allow_html=True)
+
+    st.divider()
+
     if st.button("💾 Gravar e Arquivar Análise no Histórico", type="primary"):
         if not nf_prod.strip():
             st.error("⚠️ O campo 'Nota Fiscal do Produto' é obrigatório. Preencha antes de salvar!")
