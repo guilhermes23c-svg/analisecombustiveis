@@ -95,7 +95,7 @@ def buscar_inpm_na_tabela(dens_20):
 aba_cadastro, aba_historico = st.tabs(["📄 Lançar Nova Análise", "📜 Histórico de Lançamentos"])
 
 with aba_cadastro:
-    st.title("⛽ Lançamento de Análises de Combustível")
+    st.title("⛽ Lançamento e Emissão de RAQ")
     st.subheader(f"{POSTO_RAZAO}")
     
     st.markdown("### 📋 1. Dados de Recebimento da Carga")
@@ -169,54 +169,55 @@ with aba_cadastro:
             vol_aquoso = st.number_input("Leitura da Fase Aquosa na Proveta (mL)", value=63.5, step=0.5)
             teor_etan = ((vol_aquoso - 50) * 2) + 1
         with c18:
-            st.success(f"**Dens. 20°C:** {dens_20} g/mL \n\n **Teor de Etanol Anidro:** {teor_etan} %")
+            # Validação da especificação (32% com margem de +/- 1, ou seja, de 31% a 33%)
+            if 31.0 <= teor_etan <= 33.0:
+                st.markdown(f"**Dens. 20°C:** {dens_20} g/mL <br>**Teor de Etanol Anidro:** <span style='color:green; font-weight:bold;'>{teor_etan} % (Dentro da Especificação)</span>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"**Dens. 20°C:** {dens_20} g/mL <br>**Teor de Etanol Anidro:** <span style='color:red; font-weight:bold;'>{teor_etan} % (FORA DA ESPECIFICAÇÃO!)</span>", unsafe_allow_html=True)
             
     else: 
         with c17:
             st.info(f"**Densidade Convertida a 20°C:**\n\n {dens_20} g/mL")
 
+    # --- VISUALIZAÇÃO DA FICHA RAQ NA TELA ---
     st.divider()
-
-    # --- VISUALIZAÇÃO DO MODELO RAQ NA TELA ---
     st.markdown("### 📄 Prévia da Ficha RAQ")
-    teor_texto = f"{teor_etan} %" if "Gas" in produto else f"{teor_alc} °INPM" if "Etanol" in produto else "---"
+    
+    if "Gas" in produto:
+        if 31.0 <= teor_etan <= 33.0:
+            teor_texto = f"<span style='color:green;'>{teor_etan} % (Conforme)</span>"
+        else:
+            teor_texto = f"<span style='color:red; font-weight:bold;'>{teor_etan} % (FORA DA ESPECIFICAÇÃO)</span>"
+    elif "Etanol" in produto:
+        teor_texto = f"{teor_alc} °INPM"
+    else:
+        teor_texto = "---"
+
     data_formatada = data_col.strftime('%d/%m/%Y')
 
     st.markdown(f"""
     ---
-    ### FORMULÁRIO DE REGISTRO DAS ANÁLISE DE QUALIDADE (RAQ)
-    **RAZÃO SOCIAL DO POSTO:** {POSTO_RAZAO}<br>
-    **CNPJ DO POSTO:** {POSTO_CNPJ}<br>
-    **ENDEREÇO:** {POSTO_ENDERECO}<br>
+    **FORMULÁRIO DE REGISTRO DAS ANÁLISE DE QUALIDADE (RAQ)**  
+    * **Razão Social do Posto:** {POSTO_RAZAO}  
+    * **CNPJ do Posto:** {POSTO_CNPJ}  
+    * **Endereço:** {POSTO_ENDERECO}  
     
-    ---
-    #### DADOS DE RECEBIMENTO
-    * **Produto Selecionado:** {produto}
-    * **Volume recebido:** {volume} L
-    * **Data / Hora da coleta:** {data_formatada} às {hora_col}
-    * **Distribuidor:** {dist} | CNPJ: {cnpj_dist}
-    * **Transportador:** {transp} | CNPJ: {cnpj_transp}
-    * **Nota Fiscal do Produto:** {nf_prod}
-    * **Placa do Caminhão / Motorista:** {placa_cam} - {mot} (CPF: {cpf_mot})
-    * **Analista de Origem:** {resp_quimico}
+    **Dados de Recebimento:**
+    * **Produto:** {produto} | **Volume:** {volume} L  
+    * **Data/Hora da Coleta:** {data_formatada} às {hora_col}  
+    * **Distribuidor:** {dist} (CNPJ: {cnpj_dist})  
+    * **Transportador:** {transp} (CNPJ: {cnpj_transp})  
+    * **Nota Fiscal:** {nf_prod} | **Placa:** {placa_cam}  
+    * **Motorista:** {mot} (CPF: {cpf_mot})  
+    * **Analista Responsável:** {resp_quimico}  
     
+    **Resultados das Análises:**
+    * **Aspecto Visual:** {aspecto} | **Cor:** {cor} | **Compartimento:** {comp}  
+    * **Temperatura Observada:** {temp_obs} °C | **Densidade Observada:** {dens_obs} g/mL  
+    * **Massa Específica Convertida à 20°C:** **{dens_20} g/mL**  
+    * **Teor de Etanol / Alcoólico:** **{teor_texto}**  
     ---
-    #### RESULTADOS DAS ANÁLISES
-    * **Aspecto Visual:** {aspecto}
-    * **Cor:** {cor}
-    * **Compartimento analisado:** {comp}
-    * **Temperatura Observada:** {temp_obs} °C
-    * **Massa Específica Observada:** {dens_obs} g/mL
-    * **MASSA ESPECÍFICA CONVERTIDA À 20°C:** **{dens_20} g/mL**
-    * **Teor de Etanol / Alcoólico:** {teor_texto}
-    
-    ---
-    <br><br>
-    <center>____________________________________________________</center>
-    <center><strong>ASSINATURA DO RESPONSÁVEL DO POSTO</strong></center>
     """, unsafe_allow_html=True)
-
-    st.divider()
 
     if st.button("💾 Gravar e Arquivar Análise no Histórico", type="primary"):
         if not nf_prod.strip():
